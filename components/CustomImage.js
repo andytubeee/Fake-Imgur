@@ -102,14 +102,16 @@ export const CustomImage = ({img}) => {
                             var user = firebase.auth().currentUser;
                             var db = firebase.firestore();
                             s.ref.getDownloadURL().then(url=>{
-                                db.collection('users').doc(user.uid).set({
-                                    name: user.displayName,
-                                    imgUrl: url,
-                                    imageName: imgProp.imageName,
-                                    price: imgProp.price,
-                                    private: imgProp.private,
-                                    dateUploaded: new Date()
-                                })
+                                db.collection('users').doc(user.uid).set({images: firebase.firestore.FieldValue.arrayUnion(
+                                        {
+                                            name: user.displayName,
+                                            imgUrl: url,
+                                            imageName: imgProp.imageName,
+                                            price: imgProp.price,
+                                            private: imgProp.private,
+                                            dateUploaded: new Date()
+                                        }
+                                    )}, {merge: true})
                                     .then(() => {
                                         Swal.fire("Uploaded", "Your images has been uploaded.", "success")
                                     })
