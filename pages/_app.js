@@ -4,14 +4,18 @@ import { useState } from 'react';
 import UserContext from '../components/util/UserContext';
 
 function MyApp({ Component, pageProps }) {
-  const [state, setState] = useState({
-    user: null,
-    update
-  })
+  // const [state, setState] = useState({
+  //     uploadedImageProp: [],
+  //     test: 'bruh',
+  //     update
+  // })
 
-  function update(data) {
-    setState(Object.assign({}, state, data));
-  }
+    const [ImageProps, updateImageProps] = useState([])
+
+  // function update(data, newVal) {
+  //     updateTest(Object.assign({}, state, newVal));
+  //     console.log(state)
+  // }
 
   return (
     <>
@@ -21,7 +25,7 @@ function MyApp({ Component, pageProps }) {
         <title>Fake Imgur</title>
 
       </Head>
-      <UserContext.Provider value={state}>
+      <UserContext.Provider value={{ImageProps, updateImageProps}}>
         <Component {...pageProps} />
       </UserContext.Provider>
     </>

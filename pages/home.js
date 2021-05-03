@@ -11,8 +11,7 @@ import { CustomImage } from "../components/CustomImage";
 const Home = () => {
   const router = useRouter();
   const [displayName, setDisplayName] = useState("");
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [selectedFNames, setSelectedFNames] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState({});
 
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
@@ -52,43 +51,39 @@ const Home = () => {
     });
   };
 
-  const handleImgs = async (imgArr) => {
-    // console.log(imgArr);
-    Object.values(imgArr).forEach((f) => {
+  const handleImgs = async (img) => {
       let reader = new FileReader();
-      reader.readAsDataURL(f);
+      reader.readAsDataURL(img);
       reader.onload = () => {
-        setSelectedFiles((prev) => [
-          ...prev,
-          { uri: reader.result, filename: f.name },
-        ]);
+        setSelectedFiles(
+          { uri: reader.result, filename: img.name, directFile: img });
       };
       reader.onerror = (err) => console.error(err);
-    });
   };
 
   return (
     <>
       <div className="container">
-        <h1 style={{ textAlign: "center" }}>Welcome {displayName}!</h1>
+        <h1 style={{ textAlign: "center", marginTop: 20 }}>
+          Welcome {displayName}!
+        </h1>
 
         <div className="mx-auto">
           <label for="image-file-upload" className="form-label">
-            Upload your images
+            Upload your image
           </label>
           <input
             className="form-control"
             type="file"
             accept=".png,.jpg,.jpeg"
             id="image-file-upload"
-            multiple
             onChange={(e) => {
-              let files = e.target.files;
-              handleImgs(files);
+              let file = e.target.files[0];
+              handleImgs(file);
             }}
           />
         </div>
-        {selectedFiles && <CustomImage imgs={selectedFiles} />}
+        {Object.keys(selectedFiles).length > 0 && <CustomImage img={selectedFiles} />}
         <button
           style={{
             position: "absolute",
@@ -100,7 +95,7 @@ const Home = () => {
         >
           Logout
         </button>
-        <div className="d-flex w-25 justify-content-between">
+        <div className="d-flex w-25 mt-4 justify-content-between">
           <button
             className="btn btn-secondary"
             onClick={() => router.push("/all_images")}
