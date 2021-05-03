@@ -57,8 +57,8 @@ export default function Home() {
     <>
       <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
         <h1>Fake Imgur</h1>
-        {signedIn && <button onClick={() => router.push('home')}>Home</button >}
-        {!signedIn ? <button onClick={loginWithGoogle}>Login with Google</button> : (<button onClick={signOut}>Log out</button>)}
+        {signedIn && <button className="btn btn-primary mb-1" onClick={() => router.push('home')}>Home</button >}
+        {!signedIn ? <button className="btn btn-primary" onClick={loginWithGoogle}>Login with Google</button> : (<button className="btn btn-danger" onClick={signOut}>Logout</button>)}
       </div>
     </>
   )

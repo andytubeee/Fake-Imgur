@@ -6,11 +6,13 @@ import Swal from 'sweetalert2'
 import firebase from "firebase";
 import firebaseConfig from "../firebase.config";
 import styles from "../styles/Home.module.css";
+import { CustomImage } from "../components/CustomImage";
 
 const Home = () => {
     const router = useRouter();
     const [displayName, setDisplayName] = useState("");
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [selectedFNames, setSelectedFNames] = useState([]);
 
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
@@ -51,31 +53,41 @@ const Home = () => {
 
     };
 
+    const handleImgs = async (imgArr) => {
+        // console.log(imgArr);
+        Object.values(imgArr).forEach(f => {
+            let reader = new FileReader()
+            reader.readAsDataURL(f)
+            reader.onload = () => {
+                setSelectedFiles(prev => [...prev, { uri: reader.result, filename: f.name }])
+            }
+            reader.onerror = (err) => console.error(err)
+        })
+    }
+
     return (
         <>
-            <div>
-                <h1>Welcome {displayName}!</h1>
-                <input
-                    type="file"
-                    accept=".png,.jpg,.jpeg"
-                    onChange={(e) => {
-                        console.log(e.target);
-                        setSelectedFile(e.target.files)
-                    }}
-                />
-                {selectedFile && (
-                    <img
-                        src={
-                            selectedFile
-                        }
-                    />
+            <div className="container">
+                <h1 style={{ textAlign: 'center' }}>Welcome {displayName}!</h1>
+                <div className="mx-auto">
+                    <label for="image-file-upload" className="form-label">Upload your images</label>
+                    <input className="form-control" type="file"
+                        accept=".png,.jpg,.jpeg" id="image-file-upload" multiple
+                        onChange={(e) => {
+                            let files = e.target.files
+                            handleImgs(files)
+                        }} />
+                </div>
+                {selectedFiles && (
+
+                    <CustomImage imgs={selectedFiles} />
                 )}
                 <button style={{
                     position: "absolute",
                     bottom: 10,
                     left: 10,
-                }} className={styles.home_logoutbtn} onClick={signOut}>
-                    Log out
+                }} className={"btn btn-danger px-3"} onClick={signOut}>
+                    Logout
         </button>
             </div>
         </>
