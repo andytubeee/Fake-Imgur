@@ -5,7 +5,8 @@ import "firebase/storage";
 import firebaseConfig from "../firebase.config";
 import objectScan from 'object-scan'
 import Swal from "sweetalert2";
-import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSearch} from '@fortawesome/free-solid-svg-icons'
 
 
 
@@ -115,23 +116,37 @@ const all_images = () => {
 
     }, []);
 
-    const onSearchInput = (input) => {
-
+    const searchPress = () => {
+        publicImages.map(img => {
+            if (img.imageName.includes(searchInput) || img.imageName === searchInput){
+                setSearchedImages(prev => [...prev, img])
+            }
+        })
     }
+
+    useEffect(()=>{
+        if (searchInput === ''){
+            setSearchedImages([])
+        }
+    }, [searchInput])
 
     return (
         <div className="container d-flex flex-column">
             <h1 style={{textAlign: "center", marginTop: 20}}>All Images</h1>
             <button onClick={() => {
                 router.push('/home')
-            }} className="btn btn-secondary mb-4" style={{width: '10%'}}>Home
+            }} className="btn btn-secondary mb-4" style={{width: '10%', minWidth: '100px'}}>Home
             </button>
             <div className="d-flex p-1 justify-content-between">
-                <input className="form-control" type="text" style={{width: '89%'}} placeholder="Search for Images" aria-label="default input search" onChange={event => onSearchInput(event.target.value)} />
-                <button className="btn btn-primary" style={{width: '10%'}}> Search
+                <input className="form-control" type="text" style={{width: '89%'}} placeholder="Search for Images" aria-label="default input search" onChange={event => setSearchInput(event.target.value)} />
+                <button className="btn btn-primary" style={{width: '10%', minWidth: '80px'}} onClick={searchPress}> <FontAwesomeIcon icon={faSearch} style={{width: 20}}/> Search
                 </button>
             </div>
-            {searchInput.length === 0 && publicImages.map((img, index) =>
+            {!(searchInput.length > 0 && searchedImages.length > 0) && publicImages.map((img) =>
+                <ImageCard price={img.price} url={img.imgUrl} name={img.imageName} author={img.author}
+                           authorID={img.authorID}/>
+            )}
+            {searchedImages.length > 0&& searchedImages.map((img) =>
                 <ImageCard price={img.price} url={img.imgUrl} name={img.imageName} author={img.author}
                            authorID={img.authorID}/>
             )}
