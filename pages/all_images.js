@@ -15,26 +15,52 @@ if (!firebase.apps.length) {
 
 const ImageCard = ({name, url, price, author, authorID}) => {
 
+    const [purchasedImages, setPurchasedimages] = useState([])
+
+    useEffect(()=>{
+        const db = firebase.firestore()
+        const uid = firebase.auth().currentUser.uid
+        const myImgRef = db.collection("users").doc(uid);
+        myImgRef.get().then((doc) => {
+            if (doc.exists) {
+                if (doc.data().hasOwnProperty('p_images')) {
+                    doc.data().p_images.forEach(img => {
+                        setPurchasedimages(prev => [...prev, img.imgUrl])
+                    })
+                }
+            }
+        })
+    }, [])
+
     const displayName = firebase.auth().currentUser.displayName
 
     const purchaseImage = () => {
-        Swal.fire({
-            title: "Do you want to purchase this image?",
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonText: `Purchase`,
-        }).then((result) => {
-            /* Read more about isConfirmed, isDenied below */
-            if (result.isConfirmed) {
-                const db = firebase.firestore().collection('users')
-                const userRef = db.doc(firebase.auth().currentUser.uid)
 
-                userRef.update({
-                    p_images: firebase.firestore.FieldValue.arrayUnion({imgUrl: url, imgName: name, author: author, datePurchased: new Date()})
-                }).then(s => Swal.fire('Purchased!', 'Item can be found under purchased images', 'success'))
-                    .catch(error => Swal.fire('Error!', error.message, 'error'))
-            }
-        });
+        if (purchasedImages.includes(url)){
+            Swal.fire({
+                title: "Already Purchased",
+                text: "Image can be found in purchased images",
+                icon: 'warning'
+            })
+        } else {
+            Swal.fire({
+                title: "Do you want to purchase this image?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: `Purchase`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    const db = firebase.firestore().collection('users')
+                    const userRef = db.doc(firebase.auth().currentUser.uid)
+
+                    userRef.update({
+                        p_images: firebase.firestore.FieldValue.arrayUnion({imgUrl: url, imgName: name, author: author, datePurchased: new Date()})
+                    }).then(s => Swal.fire('Purchased!', 'Item can be found under purchased images', 'success'))
+                        .catch(error => Swal.fire('Error!', error.message, 'error'))
+                }
+            });
+        }
     }
     return (
         <>
