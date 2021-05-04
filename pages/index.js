@@ -32,9 +32,6 @@ export default function Home() {
       .then((result) => {
         var user = result.user;
         // console.log(user);
-        user_context.update({
-          user
-        })
         setSignedIn(true)
       }).catch((error) => {
         // Handle Errors here.
@@ -57,6 +54,7 @@ export default function Home() {
     <>
       <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
         <h1>Fake Imgur</h1>
+        <button className="btn btn-info mb-1" onClick={() => router.push('/all_images')}>Browser Images</button >
         {signedIn && <button className="btn btn-primary mb-1" onClick={() => router.push('home')}>Home</button >}
         {!signedIn ? <button className="btn btn-primary" onClick={loginWithGoogle}>Login with Google</button> : (<button className="btn btn-danger" onClick={signOut}>Logout</button>)}
       </div>

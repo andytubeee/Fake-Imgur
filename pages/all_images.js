@@ -23,11 +23,11 @@ const ImageCard = ({name, url, price, author}) => {
     }
     return (
         <>
-            <div className={"align-self-center mb-4"}>
+            <div className={"align-self-center border rounded m-4 p-4"}>
                 <h4>{name}</h4>
                 <img src={url} width={400} alt={name}/>
                 <div title={"Change"} className="d-flex justify-content-between align-items-center">
-                    <div className="d-flex">
+                    <div className="d-flex w-100 mt-3 justify-content-between">
                         <span style={{cursor: 'pointer', margin: '0 10px'}} className="badge bg-success"
                               onClick={purchaseImage}>${price}</span>
                         <div><b>Author: </b>{author}</div>
