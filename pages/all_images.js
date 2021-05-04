@@ -19,52 +19,67 @@ if (!firebase.apps.length) {
 const ImageCard = ({name, url, price, author, authorID}) => {
 
     const [purchasedImages, setPurchasedimages] = useState([])
-
+    const [userLoggedIn, setUserLoggedIn] = useState(false)
+    const [userUID, setUserUID] = useState('')
     useEffect(()=>{
-        const db = firebase.firestore()
-        const uid = firebase.auth().currentUser.uid
-        const myImgRef = db.collection("users").doc(uid);
-        myImgRef.get().then((doc) => {
-            if (doc.exists) {
-                if (doc.data().hasOwnProperty('p_images')) {
-                    doc.data().p_images.forEach(img => {
-                        setPurchasedimages(prev => [...prev, img.imgUrl])
-                    })
-                }
+        firebase.auth().onAuthStateChanged((user) => {
+            if(user){
+                setUserLoggedIn(true)
+                setUserUID(user.uid)
+                const db = firebase.firestore()
+                const uid = firebase.auth().currentUser.uid
+                const myImgRef = db.collection("users").doc(uid);
+                myImgRef.get().then((doc) => {
+                    if (doc.exists) {
+                        if (doc.data().hasOwnProperty('p_images')) {
+                            doc.data().p_images.forEach(img => {
+                                setPurchasedimages(prev => [...prev, img.imgUrl])
+                            })
+                        }
+                    }
+                })
             }
         })
-    }, [])
 
-    const displayName = firebase.auth().currentUser.displayName
+    }, [])
 
     const purchaseImage = () => {
 
-        if (purchasedImages.includes(url)){
-            Swal.fire({
-                title: "Already Purchased",
-                text: "Image can be found in purchased images",
-                icon: 'warning'
-            })
-        } else {
-            Swal.fire({
-                title: "Do you want to purchase this image?",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonText: `Purchase`,
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    const db = firebase.firestore().collection('users')
-                    const userRef = db.doc(firebase.auth().currentUser.uid)
+        if (userLoggedIn) {
+            if (purchasedImages.includes(url)){
+                Swal.fire({
+                    title: "Already Purchased",
+                    text: "Image can be found in purchased images",
+                    icon: 'warning'
+                })
+            } else {
+                Swal.fire({
+                    title: "Do you want to purchase this image?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: `Purchase`,
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        const db = firebase.firestore().collection('users')
+                        const userRef = db.doc(firebase.auth().currentUser.uid)
 
-                    userRef.update({
-                        p_images: firebase.firestore.FieldValue.arrayUnion({imgUrl: url, imgName: name, author: author, datePurchased: new Date()})
-                    }).then(s => Swal.fire('Purchased!', 'Item can be found under purchased images', 'success'))
-                        .catch(error => Swal.fire('Error!', error.message, 'error'))
-                }
-            });
+                        userRef.update({
+                            p_images: firebase.firestore.FieldValue.arrayUnion({imgUrl: url, imgName: name, author: author, datePurchased: new Date()})
+                        }).then(s => Swal.fire('Purchased!', 'Item can be found under purchased images', 'success'))
+                            .catch(error => Swal.fire('Error!', error.message, 'error'))
+                    }
+                });
+            }
+        }
+        else {
+            Swal.fire({
+                title: "Can't Make Purchase", text: "Please sign in first", icon: 'error'
+            })
         }
     }
+
+
     return (
         <>
             <div className={"align-self-center border border-2 rounded rounded-3 m-4 p-4"}>
@@ -74,7 +89,7 @@ const ImageCard = ({name, url, price, author, authorID}) => {
                     <div className="d-flex w-100 mt-3 justify-content-between">
                         <div>
                             <span style={{margin: '0 10px'}} className="badge bg-success">${price}</span>
-                            {authorID !== firebase.auth().currentUser.uid &&
+                            {authorID !== userUID &&
                             <span style={{margin: '0 10px', cursor: 'pointer'}} className="badge bg-primary" onClick={purchaseImage}>Purchase</span>
                             }
                         </div>
@@ -94,6 +109,8 @@ const all_images = () => {
     const [searchedImages, setSearchedImages] = useState([]);
     const [searchInput, setSearchInput] = useState('')
     const [filter, setFilter] = useState('Default')
+    const [userLoggedIn, setUserLoggedIn] = useState(false)
+    const [userUID, setUserUID] = useState('')
     const router = useRouter()
 
     // console.log(storageRef.child("images"));
@@ -114,6 +131,10 @@ const all_images = () => {
             })
         })
 
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) setUserLoggedIn(true)
+        })
+
 
     }, []);
 
@@ -126,16 +147,21 @@ const all_images = () => {
     }
 
     useEffect(()=>{
+        // Cleared searched input, get rid of searchedImages
         if (searchInput === ''){
             setSearchedImages([])
         }
     }, [searchInput])
 
+    useEffect(()=> {
+        console.log(filter)
+    }, [filter])
+
     return (
         <div className="container d-flex flex-column">
             <h1 style={{textAlign: "center", marginTop: 20}}>All Images</h1>
             <button onClick={() => {
-                router.push('/home')
+                router.push(userLoggedIn ? '/home' : '/')
             }} className="btn btn-secondary mb-4" style={{width: '10%', minWidth: '100px'}}>Home
             </button>
             <div className="d-flex p-1 justify-content-between">
@@ -147,10 +173,10 @@ const all_images = () => {
             {(publicImages.length > 0 || searchedImages.length > 0) && (
                 <>
                     <label>Filter</label>
-                    <select className="form-select" style={{width: '10vmax'}} aria-label="Default select example">
-                        <option value="1">Default</option>
-                        <option value="2">Name</option>
-                        <option value="3">Date Posted</option>
+                    <select className="form-select" style={{width: '10vmax'}} aria-label="Default select example" onChange={event => setFilter(event.target.value)}>
+                        <option value="default">Default</option>
+                        <option value="name">Name</option>
+                        <option value="datePosted">Date Posted</option>
                     </select>
                 </>
             )}
