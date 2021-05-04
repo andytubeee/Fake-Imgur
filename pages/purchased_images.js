@@ -11,90 +11,27 @@ if (!firebase.apps.length) {
     firebase.app(); // if already initialized, use that one
 }
 
-const MyImageCard = ({name, url, price, Isprivate}) => {
+const MyImageCard = ({name, url, price, author, datePurchased}) => {
 
-    const db = firebase.firestore()
+    console.log(author, name)
 
-    const changePrice = () => {
+    const imageOnClick = () => {
+
         Swal.fire({
-            title: 'Update Price',
-            input: 'number',
-            inputAttributes: {
-                autocapitalize: 'off'
-            },
-            showCancelButton: true,
-            confirmButtonText: 'Update',
-            showLoaderOnConfirm: true,
-            allowOutsideClick: () => !Swal.isLoading()
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const newPrice = result.value
-                console.log(newPrice)
-                Swal.fire({title:'Coming Soon', text:'Feature under construction'})
-            }
-        })
-    }
-
-    const deleteImage = () => {
-        const uid = firebase.auth().currentUser.uid
-        const userImgRef = db.collection("users").doc(uid)
-
-        userImgRef.get().then((doc)=>{
-            doc.data().images.forEach(img => {
-                if (img.imgUrl === url && img.private === Isprivate){
-                    userImgRef.update({
-                        images: firebase.firestore.FieldValue.arrayRemove(img)
-                    }).then(() => window.location.reload(false));
-                }
+                title: 'Date Purchased',
+                text: datePurchased.toDate(),
+                icon: 'info'
             })
-        })
-    }
-
-    const changePrivate = () => {
-        if (firebase.auth().currentUser.uid) {
-            const uid = firebase.auth().currentUser.uid
-            const userImageRef = db.collection('users').doc(uid)
-            userImageRef.get().then(doc => {
-                doc.data().images.map(d_img => {
-                    if (d_img.imgUrl === url) {
-                        let temp = d_img
-                        temp.private = !d_img.private
-                        userImageRef.update({
-                            images: firebase.firestore.FieldValue.arrayRemove(d_img)
-                        }).then(r => {
-                            userImageRef.update({
-                                images: firebase.firestore.FieldValue.arrayUnion(temp)
-                            })
-                        }).then(s => window.location.reload(false))
-                    }
-                })
-            })
-        }
-
     }
 
     return (
         <>
             <div className={"align-self-center mb-4"}>
                 <h4>{name}</h4>
-                <img src={url} width={400} alt={name}/>
+                <img style={{cursor: 'pointer'}} title={"View Info"} src={url} width={400} alt={name} onClick={imageOnClick}/>
                 <div title={"Change"} className="d-flex justify-content-between align-items-center">
                     <div className="d-flex">
-                        <span style={{cursor: 'pointer', margin: '0 10px'}} className="badge bg-success" onClick={changePrice}>${price}</span>
-                        <span style={{cursor: 'pointer'}} className="badge bg-danger" onClick={deleteImage}>Delete</span>
-                    </div>
-                    <div className="form-check form-switch align-self-end m-1">
-                        <input
-                            className="form-check-input"
-                            style={{cursor: 'pointer'}}
-                            type="checkbox"
-                            id="check-private"
-                            checked={Isprivate}
-                            onClick={changePrivate}
-                        />
-                        <label className="form-check-label">
-                            Private
-                        </label>
+                        <span style={{margin: '0 10px'}} className="badge bg-secondary"><b>Author: </b>{author}</span>
                     </div>
                 </div>
             </div>
@@ -111,7 +48,7 @@ const my_images = () => {
     const [firestoreReady, setFirestoreReady] = useState(false)
     const [dName, setDName] = useState('')
     const [uid, setUID] = useState('')
-    const [userImages, setUserimages] = useState([])
+    const [purchasedImages, setPurchasedimages] = useState([])
 
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -124,16 +61,19 @@ const my_images = () => {
         }
     });
 
-    useEffect(()=>{
+    useEffect(() => {
         if (firestoreReady) {
             const myImgRef = db.collection("users").doc(uid);
-            myImgRef.get().then((doc)=>{
+            myImgRef.get().then((doc) => {
                 if (doc.exists) {
-                    // console.log(doc.data())
-                    if (doc.data().hasOwnProperty('p_images')){
+                    if (doc.data().hasOwnProperty('p_images')) {
                         doc.data().p_images.forEach(img => {
-                            // console.log(img)
-                            setUserimages(prev=>[...prev, {url: img.imgUrl, name: img.imageName, author: img.name}])
+                            setPurchasedimages(prev => [...prev, {
+                                url: img.imgUrl,
+                                name: img.imgName,
+                                author: img.author,
+                                datePurchased: img.datePurchased
+                            }])
                         })
                     }
 
@@ -145,15 +85,18 @@ const my_images = () => {
 
     return (
         <div className="container d-flex flex-column">
-            <h1 style={{ textAlign: "center", marginTop: 20 }}>Purchased Images</h1>
-            <button onClick={()=>{router.push('/home')}} className="btn btn-secondary mb-4" style={{width: '10%'}}>Home</button>
+            <h1 style={{textAlign: "center", marginTop: 20}}>Purchased Images</h1>
+            <button onClick={() => {
+                router.push('/home')
+            }} className="btn btn-secondary mb-4" style={{width: '10%'}}>Home
+            </button>
             <p><b>User ID:</b> {uid}</p>
             <p><b>Name:</b> {dName}</p>
 
-            {userImages.map(({name, url, price, Isprivate}) => (
-                <MyImageCard name={name} url={url} price={price} Isprivate={Isprivate}/>
+            {purchasedImages.map(({name, url, price, author, datePurchased}) => (
+                <MyImageCard name={name} url={url} price={price} author={author} datePurchased={datePurchased}/>
             ))}
-            {userImages.length === 0 && <h1>You have no purchased images</h1>}
+            {purchasedImages.length === 0 && <h1>You have no purchased images</h1>}
 
         </div>
     );

@@ -5,11 +5,6 @@ import "firebase/storage";
 import firebaseConfig from "../firebase.config";
 import objectScan from 'object-scan'
 import Swal from "sweetalert2";
-// import {initializeApp, backup} from "firestore-export-import";
-//
-// const serviceAccount = require('../fakeimgur-75881-firebase-adminsdk-pavsb-432ae0f27a.json')
-//
-// initializeApp(serviceAccount)
 
 
 if (!firebase.apps.length) {
@@ -23,6 +18,23 @@ const ImageCard = ({name, url, price, author, authorID}) => {
     const displayName = firebase.auth().currentUser.displayName
 
     const purchaseImage = () => {
+        Swal.fire({
+            title: "Do you want to purchase this image?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: `Purchase`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                const db = firebase.firestore().collection('users')
+                const userRef = db.doc(firebase.auth().currentUser.uid)
+
+                userRef.update({
+                    p_images: firebase.firestore.FieldValue.arrayUnion({imgUrl: url, imgName: name, author: author, datePurchased: new Date()})
+                }).then(s => Swal.fire('Purchased!', 'Item can be found under purchased images', 'success'))
+                    .catch(error => Swal.fire('Error!', error.message, 'error'))
+            }
+        });
     }
     return (
         <>
@@ -34,7 +46,7 @@ const ImageCard = ({name, url, price, author, authorID}) => {
                         <div>
                             <span style={{margin: '0 10px'}} className="badge bg-success">${price}</span>
                             {authorID !== firebase.auth().currentUser.uid &&
-                            <span style={{margin: '0 10px', cursor: 'pointer'}} className="badge bg-primary">Purchase</span>
+                            <span style={{margin: '0 10px', cursor: 'pointer'}} className="badge bg-primary" onClick={purchaseImage}>Purchase</span>
                             }
                         </div>
                         <div><b>Author: </b>{author}</div>
