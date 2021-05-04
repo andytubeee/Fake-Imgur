@@ -72,7 +72,7 @@ const MyImageCard = ({name, url, price, Isprivate}) => {
                             }}
                         />
                         <label className="form-check-label">
-                            {Isprivate ? 'Private' : 'Public'}
+                            Private
                         </label>
                     </div>
                 </div>

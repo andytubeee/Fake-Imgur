@@ -55,8 +55,7 @@ const ImageUploadCard = ({uri, filename, events: {imgProp, setImgProp}}) => {
                             setImgProp({...imgProp, private: !imgProp.private})
                         }}
                     />
-                    <label className="form-check-label">
-                        {imgProp.private ? 'Private' : 'Public'}
+                    <label className="form-check-label">Private
                         {}
                     </label>
                 </div>
