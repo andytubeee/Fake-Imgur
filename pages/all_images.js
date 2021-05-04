@@ -18,7 +18,10 @@ if (!firebase.apps.length) {
     firebase.app(); // if already initialized, use that one
 }
 
-const ImageCard = ({name, url, price, author}) => {
+const ImageCard = ({name, url, price, author, authorID}) => {
+
+    const displayName = firebase.auth().currentUser.displayName
+
     const purchaseImage = () => {
     }
     return (
@@ -28,8 +31,12 @@ const ImageCard = ({name, url, price, author}) => {
                 <img src={url} width={400} alt={name}/>
                 <div title={"Change"} className="d-flex justify-content-between align-items-center">
                     <div className="d-flex w-100 mt-3 justify-content-between">
-                        <span style={{cursor: 'pointer', margin: '0 10px'}} className="badge bg-success"
-                              onClick={purchaseImage}>${price}</span>
+                        <div>
+                            <span style={{margin: '0 10px'}} className="badge bg-success">${price}</span>
+                            {authorID !== firebase.auth().currentUser.uid &&
+                            <span style={{margin: '0 10px', cursor: 'pointer'}} className="badge bg-primary">Purchase</span>
+                            }
+                        </div>
                         <div><b>Author: </b>{author}</div>
                     </div>
                 </div>
@@ -54,11 +61,13 @@ const all_images = () => {
         userSnapshot.then(snapshot => {
             snapshot.docs.map(d => {
                 // console.log(d.data())
-                d.data().images.map(d_img => {
-                    if (d_img.private === false) {
-                        setPublicImages(prev => [...prev, d_img])
-                    }
-                })
+                if (d.data().hasOwnProperty('images')) {
+                    d.data().images.map(d_img => {
+                        if (d_img.private === false) {
+                            setPublicImages(prev => [...prev, d_img])
+                        }
+                    })
+                }
             })
         })
 
@@ -73,10 +82,11 @@ const all_images = () => {
             }} className="btn btn-secondary mb-4" style={{width: '10%'}}>Home
             </button>
             {publicImages.map((img, index) =>
-                    <ImageCard price={img.price} url={img.imgUrl} name={img.imageName} author={img.name} />
-
+                <ImageCard price={img.price} url={img.imgUrl} name={img.imageName} author={img.author}
+                           authorID={img.authorID}/>
             )
             }
+            {publicImages.length === 0 && <h1>No one has uploaded anything!</h1>}
         </div>
     );
 };

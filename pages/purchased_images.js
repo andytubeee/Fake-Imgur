@@ -129,12 +129,14 @@ const my_images = () => {
             const myImgRef = db.collection("users").doc(uid);
             myImgRef.get().then((doc)=>{
                 if (doc.exists) {
-                    if(doc.data().hasOwnProperty('images')){
-                        doc.data().images.forEach(img => {
+                    // console.log(doc.data())
+                    if (doc.data().hasOwnProperty('p_images')){
+                        doc.data().p_images.forEach(img => {
                             // console.log(img)
-                            setUserimages(prev=>[...prev, {url: img.imgUrl, name: img.imageName, Isprivate: img.private, price: img.price}])
+                            setUserimages(prev=>[...prev, {url: img.imgUrl, name: img.imageName, author: img.name}])
                         })
                     }
+
                 }
             })
         }
@@ -143,7 +145,7 @@ const my_images = () => {
 
     return (
         <div className="container d-flex flex-column">
-            <h1 style={{ textAlign: "center", marginTop: 20 }}>My Images</h1>
+            <h1 style={{ textAlign: "center", marginTop: 20 }}>Purchased Images</h1>
             <button onClick={()=>{router.push('/home')}} className="btn btn-secondary mb-4" style={{width: '10%'}}>Home</button>
             <p><b>User ID:</b> {uid}</p>
             <p><b>Name:</b> {dName}</p>
@@ -151,7 +153,7 @@ const my_images = () => {
             {userImages.map(({name, url, price, Isprivate}) => (
                 <MyImageCard name={name} url={url} price={price} Isprivate={Isprivate}/>
             ))}
-            {userImages.length === 0 && <h1>You have no Images</h1>}
+            {userImages.length === 0 && <h1>You have no purchased images</h1>}
 
         </div>
     );

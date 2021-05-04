@@ -83,7 +83,7 @@ const Home = () => {
             }}
           />
         </div>
-        {Object.keys(selectedFiles).length > 0 && <CustomImage img={selectedFiles} />}
+        {Object.keys(selectedFiles).length > 0 && <CustomImage img={selectedFiles} authorID={firebase.auth().currentUser.uid}/>}
         <button
           style={{
             position: "absolute",
@@ -95,18 +95,23 @@ const Home = () => {
         >
           Logout
         </button>
-        <div className="d-flex w-25 mt-4 justify-content-between">
+        <div className="d-flex mt-4 justify-content-between flex-wrap align-content-center align-items-center" style={{width: '35%'}}>
           <button
-            className="btn btn-secondary"
+            className="btn btn-secondary m-2"
             onClick={() => router.push("/all_images")}
           >
             Browse Pictures
           </button>
           <button
-            className="btn btn-secondary"
+            className="btn btn-secondary m-2"
             onClick={() => router.push("/my_images")}
           >
             My Pictures
+          </button><button
+            className="btn btn-secondary m-2"
+            onClick={() => router.push("/purchased_images")}
+          >
+            Purchased Pictures
           </button>
         </div>
       </div>

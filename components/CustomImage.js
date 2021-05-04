@@ -64,12 +64,10 @@ const ImageUploadCard = ({uri, filename, events: {imgProp, setImgProp}}) => {
     );
 };
 
-export const CustomImage = ({img}) => {
+export const CustomImage = ({img, authorID}) => {
     // Default to public
     const [dataLoaded, setDataLoaded] = useState(false);
-    const [imgProp, setImgProp] = useState({private: false, price: null, imageName: img.filename});
-
-    const imgContext = useContext(UserContext)
+    const [imgProp, setImgProp] = useState({private: false, price: null, imageName: img.filename, authorID: authorID});
 
     useEffect(() => {
 
@@ -103,12 +101,13 @@ export const CustomImage = ({img}) => {
                             s.ref.getDownloadURL().then(url=>{
                                 db.collection('users').doc(user.uid).set({images: firebase.firestore.FieldValue.arrayUnion(
                                         {
-                                            name: user.displayName,
+                                            author: user.displayName,
                                             imgUrl: url,
                                             imageName: imgProp.imageName,
                                             price: imgProp.price,
                                             private: imgProp.private,
-                                            dateUploaded: new Date()
+                                            dateUploaded: new Date(),
+                                            authorID: imgProp.authorID
                                         }
                                     )}, {merge: true})
                                     .then(() => {
