@@ -93,6 +93,7 @@ const all_images = () => {
     const [publicImages, setPublicImages] = useState([]);
     const [searchedImages, setSearchedImages] = useState([]);
     const [searchInput, setSearchInput] = useState('')
+    const [filter, setFilter] = useState('Default')
     const router = useRouter()
 
     // console.log(storageRef.child("images"));
@@ -142,10 +143,23 @@ const all_images = () => {
                 <button className="btn btn-primary" style={{width: '10%', minWidth: '80px'}} onClick={searchPress}> <FontAwesomeIcon icon={faSearch} style={{width: 20}}/> Search
                 </button>
             </div>
+            {/*Hide filter dropdown if there are no images*/}
+            {(publicImages.length > 0 || searchedImages.length > 0) && (
+                <>
+                    <label>Filter</label>
+                    <select className="form-select" style={{width: '10vmax'}} aria-label="Default select example">
+                        <option value="1">Default</option>
+                        <option value="2">Name</option>
+                        <option value="3">Date Posted</option>
+                    </select>
+                </>
+            )}
+            {/*Showing all image if we didn't search*/}
             {!(searchInput.length > 0 && searchedImages.length > 0) && publicImages.map((img) =>
                 <ImageCard price={img.price} url={img.imgUrl} name={img.imageName} author={img.author}
                            authorID={img.authorID}/>
             )}
+            {/* Show filtered images if there are any, and we asked for it*/}
             {searchedImages.length > 0&& searchedImages.map((img) =>
                 <ImageCard price={img.price} url={img.imgUrl} name={img.imageName} author={img.author}
                            authorID={img.authorID}/>
