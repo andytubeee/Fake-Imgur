@@ -35,7 +35,6 @@ const MyImageCard = ({name, url, price, Isprivate}) => {
                     userImageRef.get().then(doc => {
                         doc.data().images.map(d_img => {
                             if (d_img.imgUrl === url) {
-                                const opposite = !d_img.private
                                 userImageRef.set({
                                     images: firebase.firestore.FieldValue.arrayUnion({...d_img, price: newPrice})
                                 }).then(s => {
@@ -83,10 +82,45 @@ const MyImageCard = ({name, url, price, Isprivate}) => {
         }
     }
 
+    const changeImageName = () => {
+        Swal.fire({
+            title: 'Change Image Name',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Update',
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const newName = result.value
+                if (firebase.auth().currentUser.uid) {
+                    const uid = firebase.auth().currentUser.uid
+                    const userImageRef = db.collection('users').doc(uid)
+                    userImageRef.get().then(doc => {
+                        doc.data().images.map(d_img => {
+                            if (d_img.imgUrl === url) {
+                                userImageRef.set({
+                                    images: firebase.firestore.FieldValue.arrayUnion({...d_img, imageName: newName})
+                                }).then(s => {
+                                    Swal.fire({title: 'Updated', text: `Your new name is ${newName}`}).then(_ => {
+                                        window.location.reload(false)
+                                    })
+                                })
+                            }
+                        })
+                    })
+                }
+            }
+        })
+    }
+
     return (
         <>
             <div className={"align-self-center mb-4"}>
-                <h4>{name}</h4>
+                <h4 style={{cursor:'pointer'}} onClick={changeImageName}>{name}</h4>
                 <img src={url} width={400} alt={name}/>
                 <div title={"Change"} className="d-flex justify-content-between align-items-center">
                     <div className="d-flex">
