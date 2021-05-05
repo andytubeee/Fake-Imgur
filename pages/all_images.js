@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import firebase from "firebase";
 import "firebase/storage";
@@ -153,14 +153,30 @@ const all_images = () => {
         }
     }, [searchInput])
 
-    // useEffect(()=> {
-    //     // console.log(filter==='name')
-    //     if (filter === 'name') {
-    //         let temp = publicImages;
-    //         temp.sort((a,b) => (a.imageName > b.imageName) ? 1 : ((b.imageName > a.imageName) ? -1 : 0))
-    //         setPublicImages(temp)
-    //     }
-    // }, [filter])
+
+    const signOut = () => {
+        Swal.fire({
+            title: "Do you want to logout?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: `Logout`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                firebase
+                    .auth()
+                    .signOut()
+                    .then(() => {
+                        Swal.fire("Success!", "You are logged out!", "success").then(_ => router.push("/"));
+                    })
+                    .catch((error) => {
+                        // An error happened.
+                        console.log(error);
+                    });
+            }
+        });
+    };
+
 
     const handleSort = (filter) => {
         if (filter === 'name') {
@@ -213,6 +229,17 @@ const all_images = () => {
                            authorID={img.authorID}/>
             )}
             {publicImages.length === 0 && <h1>No one has uploaded anything!</h1>}
+            <button
+                style={{
+                    position: "absolute",
+                    bottom: 10,
+                    left: 10,
+                }}
+                className={"btn btn-danger px-3"}
+                onClick={signOut}
+            >
+                Logout
+            </button>
         </div>
     );
 };

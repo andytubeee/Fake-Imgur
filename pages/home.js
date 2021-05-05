@@ -37,16 +37,15 @@ const Home = () => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         firebase
-          .auth()
-          .signOut()
-          .then(() => {
-            Swal.fire("Success!", "You are logged out!", "success");
-            router.push("/");
-          })
-          .catch((error) => {
-            // An error happened.
-            console.log(error);
-          });
+            .auth()
+            .signOut()
+            .then(() => {
+              Swal.fire("Success!", "You are logged out!", "success").then(_ => router.push("/"));
+            })
+            .catch((error) => {
+              // An error happened.
+              console.log(error);
+            });
       }
     });
   };

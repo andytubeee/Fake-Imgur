@@ -1,6 +1,6 @@
 import firebase from "firebase";
 import firebaseConfig from "../firebase.config";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import Swal from "sweetalert2";
 import {withCoalescedInvoke} from "next/dist/lib/coalesced-function";
@@ -120,7 +120,7 @@ const my_images = () => {
 
     const db = firebase.firestore()
 
-    const [userSignedIn, setUserSignedIn] = useState(false)
+    const [userSignedIn, setUserSignedIn] = useState(firebase.auth().currentUser)
     const [firestoreReady, setFirestoreReady] = useState(false)
     const [dName, setDName] = useState('')
     const [uid, setUID] = useState('')
@@ -170,6 +170,30 @@ const my_images = () => {
         });
     }
 
+    const signOut = () => {
+        Swal.fire({
+            title: "Do you want to logout?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: `Logout`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                firebase
+                    .auth()
+                    .signOut()
+                    .then(() => {
+                        Swal.fire("Success!", "You are logged out!", "success").then(_ => router.push("/"));
+                    })
+                    .catch((error) => {
+                        // An error happened.
+                        console.log(error);
+                    });
+            }
+        });
+    };
+
+
     return (
         <div className="container d-flex flex-column">
             <h1 style={{textAlign: "center", marginTop: 20}}>My Images</h1>
@@ -189,7 +213,17 @@ const my_images = () => {
                 <MyImageCard name={name} url={url} price={price} Isprivate={Isprivate}/>
             ))}
             {userImages.length === 0 && userSignedIn && <h1>You have no Images</h1>}
-
+            <button
+                style={{
+                    position: "absolute",
+                    bottom: 10,
+                    left: 10,
+                }}
+                className={"btn btn-danger px-3"}
+                onClick={signOut}
+            >
+                Logout
+            </button>
         </div>
     );
 };
