@@ -229,7 +229,7 @@ const all_images = () => {
                            authorID={img.authorID}/>
             )}
             {publicImages.length === 0 && <h1>No one has uploaded anything!</h1>}
-            <button
+            {userLoggedIn && <button
                 style={{
                     position: "absolute",
                     bottom: 10,
@@ -239,7 +239,7 @@ const all_images = () => {
                 onClick={signOut}
             >
                 Logout
-            </button>
+            </button>}
         </div>
     );
 };

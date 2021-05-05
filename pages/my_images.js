@@ -213,7 +213,7 @@ const my_images = () => {
                 <MyImageCard name={name} url={url} price={price} Isprivate={Isprivate}/>
             ))}
             {userImages.length === 0 && userSignedIn && <h1>You have no Images</h1>}
-            <button
+            {userSignedIn && <button
                 style={{
                     position: "absolute",
                     bottom: 10,
@@ -223,7 +223,7 @@ const my_images = () => {
                 onClick={signOut}
             >
                 Logout
-            </button>
+            </button>}
         </div>
     );
 };
