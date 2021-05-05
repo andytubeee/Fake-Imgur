@@ -2,10 +2,15 @@
   "name": "fake_imgur",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=14.16.1"
+  },
   "scripts": {
     "dev": "next dev",
+    "export": "next export",
     "build": "next build",
-    "start": "next start"
+    "start": "next start -p $PORT",
+    "heroku-postbuild": "yarn run build"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
