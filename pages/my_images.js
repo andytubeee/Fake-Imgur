@@ -57,14 +57,9 @@ const MyImageCard = ({name, url, price, Isprivate}) => {
             userImageRef.get().then(doc => {
                 doc.data().images.map(d_img => {
                     if (d_img.imgUrl === url) {
-                        let temp = d_img
-                        temp.private = !d_img.private
-                        userImageRef.update({
-                            images: firebase.firestore.FieldValue.arrayRemove(d_img)
-                        }).then(r => {
-                            userImageRef.update({
-                                images: firebase.firestore.FieldValue.arrayUnion(temp)
-                            })
+                        const opposite = !d_img.private
+                        userImageRef.set({
+                            images: firebase.firestore.FieldValue.arrayUnion({...d_img, private: opposite})
                         }).then(s => window.location.reload(false))
                     }
                 })
