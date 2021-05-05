@@ -20,6 +20,10 @@
 * Sort System (Date, Name, Price)
 * Delete Image
 * ~~Route protection system (Buggy)~~ Why not just sign in?
+  
+* Search image system
+* Change picture mode (private/public)
+* Update image price
 
 
 ### Note
