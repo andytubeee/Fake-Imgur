@@ -19,7 +19,7 @@
 * Anti-repurchase System
 * Sort System (Date, Name, Price)
 * Delete Image
-* ~~Route protection system (Buggy)~~ Why not just sign in?
+* ~~Route protection system (Buggy)~~ Sign-in feature on protected pages
   
 * Search image system
 * Change picture mode (private/public)
