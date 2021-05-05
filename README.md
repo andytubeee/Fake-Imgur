@@ -21,6 +21,11 @@
 * Delete Image
 * Route protection system (Buggy)
 
+
+### Note
+* Test is available in [/test](https://github.com/andytubeee/Fake-Imgur/tree/main/test)
+* Unit test powered by Jest
+
 ### Future Feature Plans
 * Implement multi-images handling:
   * Upload
