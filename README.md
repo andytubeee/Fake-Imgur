@@ -23,7 +23,9 @@
   
 * Search image system
 * Change picture mode (private/public)
-* Update image price
+* Change image price
+* Change image name
+* User protection system (Unable to modify images by other users)
 
 
 ### Note
