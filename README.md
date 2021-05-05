@@ -19,7 +19,7 @@
 * Anti-repurchase System
 * Sort System (Date, Name, Price)
 * Delete Image
-* Route protection system (Buggy)
+* ~~Route protection system (Buggy)~~ Why not just sign in?
 
 
 ### Note
