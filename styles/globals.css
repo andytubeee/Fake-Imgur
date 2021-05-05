@@ -19,3 +19,7 @@ a {
 button {
   cursor: pointer;
 }
+
+img {
+  -webkit-user-drag: none;
+}
