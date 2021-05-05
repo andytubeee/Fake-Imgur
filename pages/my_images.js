@@ -29,8 +29,24 @@ const MyImageCard = ({name, url, price, Isprivate}) => {
         }).then((result) => {
             if (result.isConfirmed) {
                 const newPrice = result.value
-                console.log(newPrice)
-                Swal.fire({title: 'Coming Soon', text: 'Feature under construction'})
+                if (firebase.auth().currentUser.uid) {
+                    const uid = firebase.auth().currentUser.uid
+                    const userImageRef = db.collection('users').doc(uid)
+                    userImageRef.get().then(doc => {
+                        doc.data().images.map(d_img => {
+                            if (d_img.imgUrl === url) {
+                                const opposite = !d_img.private
+                                userImageRef.set({
+                                    images: firebase.firestore.FieldValue.arrayUnion({...d_img, price: newPrice})
+                                }).then(s => {
+                                    Swal.fire({title: 'Updated', text: `Your new price is ${newPrice}`}).then(_ => {
+                                        window.location.reload(false)
+                                    })
+                                })
+                            }
+                        })
+                    })
+                }
             }
         })
     }
@@ -150,7 +166,7 @@ const my_images = () => {
             }).catch((error) => {
             // Handle Errors here.
             var errorMessage = error.message;
-            Swal.fire({title:"Error", text: errorMessage, icon:'error'})
+            Swal.fire({title: "Error", text: errorMessage, icon: 'error'})
         });
     }
 
