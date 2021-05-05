@@ -70,7 +70,6 @@ const MyImageCard = ({name, url, price, Isprivate}) => {
                 })
             })
         }
-
     }
 
     return (
@@ -113,18 +112,17 @@ const my_images = () => {
     const [uid, setUID] = useState('')
     const [userImages, setUserimages] = useState([])
 
-    firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
-            setUID(user.uid);
-            setDName(user.displayName)
-            setFirestoreReady(true)
-
-        } else {
-            router.push("/");
-        }
-    });
 
     useEffect(()=>{
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                setUID(user.uid);
+                setDName(user.displayName)
+                setFirestoreReady(true)
+            } else {
+                router.push("/");
+            }
+        });
         if (firestoreReady) {
             const myImgRef = db.collection("users").doc(uid);
             myImgRef.get().then((doc)=>{

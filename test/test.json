@@ -1,0 +1,66 @@
+[
+    {
+        "author": "John Doe",
+        "authorID": "658880e9-224a-41d3-a5af-f276398e43ac",
+        "imageName": "Blue Mountain",
+        "price": 1,
+        "imgUrl": "https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png",
+        "private": false,
+        "dateUploaded": "2020-05-06"
+    },{
+    "author": "Steve Jobs",
+    "authorID": "658880e9-224a-41d3-a5af-f276398e43ac",
+    "imageName": "Macbook",
+    "price": 10,
+    "imgUrl": "https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png",
+    "private": false,
+    "dateUploaded": "2020-05-06"
+},
+    {
+        "author": "George Clooney",
+        "authorID": "658880e9-224a-41d3-a5af-f276398e43ac",
+        "imageName": "A picture of my selfie",
+        "price": 10000,
+        "imgUrl": "https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png",
+        "private": false,
+        "dateUploaded": "2020-05-06"
+    },
+
+    {
+    "author": "Jane Doe",
+    "authorID": "658880e9-224a-41d3-a5af-f276398e43ac",
+    "imageName": "Rocky Mountain",
+    "price": 10,
+    "imgUrl": "https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png",
+    "private": false,
+    "dateUploaded": "2020-05-06"
+},
+    {
+        "author": "Jocky Oriana",
+        "authorID": "658880e9-224a-41d3-a5af-f276398e43ac",
+        "imageName": "Zebra",
+        "price": 20,
+        "imgUrl": "https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png",
+        "private": false,
+        "dateUploaded": "2020-05-06"
+    },
+    {
+    "author": "JK Rowling",
+    "authorID": "658880e9-224a-41d3-a5af-f276398e43ac",
+    "imageName": "A book",
+    "price": 10,
+    "imgUrl": "https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png",
+    "private": false,
+    "dateUploaded": "2020-05-06"
+},
+    {
+        "author": "Bob Brown",
+        "authorID": "658880e9-224a-41d3-a5af-f276398e43ac",
+        "imageName": "Cake",
+        "price": 10,
+        "imgUrl": "https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png",
+        "private": false,
+        "dateUploaded": "2020-05-06"
+    }
+]
+

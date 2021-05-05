@@ -3,7 +3,6 @@ import {useRouter} from "next/router";
 import firebase from "firebase";
 import "firebase/storage";
 import firebaseConfig from "../firebase.config";
-import objectScan from 'object-scan'
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch} from '@fortawesome/free-solid-svg-icons'
@@ -44,7 +43,6 @@ const ImageCard = ({name, url, price, author, authorID}) => {
     }, [])
 
     const purchaseImage = () => {
-
         if (userLoggedIn) {
             if (purchasedImages.includes(url)){
                 Swal.fire({
@@ -106,6 +104,7 @@ const all_images = () => {
     // Create a storage reference from our storage service
     const storageRef = firebase.storage().ref();
     const [publicImages, setPublicImages] = useState([]);
+    const [publicImagesDefault, setPublicImagesDefault] = useState([]);
     const [searchedImages, setSearchedImages] = useState([]);
     const [searchInput, setSearchInput] = useState('')
     const [filter, setFilter] = useState('Default')
@@ -125,6 +124,7 @@ const all_images = () => {
                     d.data().images.map(d_img => {
                         if (d_img.private === false) {
                             setPublicImages(prev => [...prev, d_img])
+                            setPublicImagesDefault(prev => [...prev, d_img])
                         }
                     })
                 }
@@ -138,9 +138,9 @@ const all_images = () => {
 
     }, []);
 
-    const searchPress = () => {
-        publicImages.map(img => {
-            if (img.imageName.includes(searchInput) || img.imageName === searchInput){
+    const searchPress = (allImages, keyword) => {
+        allImages.map(img => {
+            if (img.imageName.includes(keyword) || img.imageName === keyword){
                 setSearchedImages(prev => [...prev, img])
             }
         })
@@ -153,9 +153,28 @@ const all_images = () => {
         }
     }, [searchInput])
 
-    useEffect(()=> {
-        console.log(filter)
-    }, [filter])
+    // useEffect(()=> {
+    //     // console.log(filter==='name')
+    //     if (filter === 'name') {
+    //         let temp = publicImages;
+    //         temp.sort((a,b) => (a.imageName > b.imageName) ? 1 : ((b.imageName > a.imageName) ? -1 : 0))
+    //         setPublicImages(temp)
+    //     }
+    // }, [filter])
+
+    const handleSort = (filter) => {
+        if (filter === 'name') {
+            // let temp = publicImages;
+            // temp.sort((a,b) => (a.imageName > b.imageName) ? 1 : ((b.imageName > a.imageName) ? -1 : 0))
+            setPublicImages(prev=>[...prev].sort((a,b) => (a.imageName > b.imageName) ? 1 : ((b.imageName > a.imageName) ? -1 : 0)))
+        }
+        else if (filter==='price') {
+            setPublicImages(prev=>[...prev].sort((a,b) => (a.price > b.price) ? 1 : ((b.price > a.price) ? -1 : 0)))
+        }
+        else if (filter === 'default') {
+            setPublicImages(publicImagesDefault)
+        }
+    }
 
     return (
         <div className="container d-flex flex-column">
@@ -166,16 +185,17 @@ const all_images = () => {
             </button>
             <div className="d-flex p-1 justify-content-between">
                 <input className="form-control" type="text" style={{width: '89%'}} placeholder="Search for Images" aria-label="default input search" onChange={event => setSearchInput(event.target.value)} />
-                <button className="btn btn-primary" style={{width: '10%', minWidth: '80px'}} onClick={searchPress}> <FontAwesomeIcon icon={faSearch} style={{width: 20}}/> Search
+                <button className="btn btn-primary" style={{width: '10%', minWidth: '80px'}} onClick={()=>searchPress(publicImages, searchInput)}> <FontAwesomeIcon icon={faSearch} style={{width: 20}}/> Search
                 </button>
             </div>
-            {/*Hide filter dropdown if there are no images*/}
+            {/*Hide sort dropdown if there are no images*/}
             {(publicImages.length > 0 || searchedImages.length > 0) && (
                 <>
-                    <label>Filter</label>
-                    <select className="form-select" style={{width: '10vmax'}} aria-label="Default select example" onChange={event => setFilter(event.target.value)}>
+                    <label>Sort</label>
+                    <select className="form-select" style={{width: '10vmax'}} aria-label="Default select example" onChange={event => handleSort(event.target.value)}>
                         <option value="default">Default</option>
                         <option value="name">Name</option>
+                        <option value="price">Price</option>
                         <option value="datePosted">Date Posted</option>
                     </select>
                 </>
@@ -186,7 +206,7 @@ const all_images = () => {
                            authorID={img.authorID}/>
             )}
             {/* Show filtered images if there are any, and we asked for it*/}
-            {searchedImages.length > 0&& searchedImages.map((img) =>
+            {searchedImages.length > 0 && searchedImages.map((img) =>
                 <ImageCard price={img.price} url={img.imgUrl} name={img.imageName} author={img.author}
                            authorID={img.authorID}/>
             )}
