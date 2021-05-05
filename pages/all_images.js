@@ -173,6 +173,8 @@ const all_images = () => {
         }
         else if (filter === 'default') {
             setPublicImages(publicImagesDefault)
+        }else if (filter === 'datePosted') {
+            setPublicImages(prev=>[...prev].sort((a,b) => b.dateUploaded - a.dateUploaded))
         }
     }
 
