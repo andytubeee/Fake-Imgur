@@ -4,9 +4,8 @@ import firebase from "firebase";
 import "firebase/storage";
 import firebaseConfig from "../firebase.config";
 import Swal from "sweetalert2";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch} from '@fortawesome/free-solid-svg-icons'
-
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faSearch} from '@fortawesome/free-solid-svg-icons'
 
 
 if (!firebase.apps.length) {
@@ -20,9 +19,9 @@ const ImageCard = ({name, url, price, author, authorID}) => {
     const [purchasedImages, setPurchasedimages] = useState([])
     const [userLoggedIn, setUserLoggedIn] = useState(false)
     const [userUID, setUserUID] = useState('')
-    useEffect(()=>{
+    useEffect(() => {
         firebase.auth().onAuthStateChanged((user) => {
-            if(user){
+            if (user) {
                 setUserLoggedIn(true)
                 setUserUID(user.uid)
                 const db = firebase.firestore()
@@ -44,7 +43,7 @@ const ImageCard = ({name, url, price, author, authorID}) => {
 
     const purchaseImage = () => {
         if (userLoggedIn) {
-            if (purchasedImages.includes(url)){
+            if (purchasedImages.includes(url)) {
                 Swal.fire({
                     title: "Already Purchased",
                     text: "Image can be found in purchased images",
@@ -63,14 +62,18 @@ const ImageCard = ({name, url, price, author, authorID}) => {
                         const userRef = db.doc(firebase.auth().currentUser.uid)
 
                         userRef.update({
-                            p_images: firebase.firestore.FieldValue.arrayUnion({imgUrl: url, imgName: name, author: author, datePurchased: new Date()})
-                        }).then(s => Swal.fire('Purchased!', 'Item can be found under purchased images', 'success'))
+                            p_images: firebase.firestore.FieldValue.arrayUnion({
+                                imgUrl: url,
+                                imgName: name,
+                                author: author,
+                                datePurchased: new Date()
+                            })
+                        }).then(s => Swal.fire('Purchased!', 'Item can be found under purchased images', 'success').then(_ => window.location.reload(false)))
                             .catch(error => Swal.fire('Error!', error.message, 'error'))
                     }
                 });
             }
-        }
-        else {
+        } else {
             Swal.fire({
                 title: "Can't Make Purchase", text: "Please sign in first", icon: 'error'
             })
@@ -88,7 +91,8 @@ const ImageCard = ({name, url, price, author, authorID}) => {
                         <div>
                             <span style={{margin: '0 10px'}} className="badge bg-success">${price}</span>
                             {authorID !== userUID &&
-                            <span style={{margin: '0 10px', cursor: 'pointer'}} className="badge bg-primary" onClick={purchaseImage}>Purchase</span>
+                            <span style={{margin: '0 10px', cursor: 'pointer'}} className="badge bg-primary"
+                                  onClick={purchaseImage}>Purchase</span>
                             }
                         </div>
                         <div><b>Author: </b>{author}</div>
@@ -140,15 +144,15 @@ const all_images = () => {
 
     const searchPress = (allImages, keyword) => {
         allImages.map(img => {
-            if (img.imageName.includes(keyword) || img.imageName === keyword){
+            if (img.imageName.includes(keyword) || img.imageName === keyword) {
                 setSearchedImages(prev => [...prev, img])
             }
         })
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         // Cleared searched input, get rid of searchedImages
-        if (searchInput === ''){
+        if (searchInput === '') {
             setSearchedImages([])
         }
     }, [searchInput])
@@ -171,7 +175,7 @@ const all_images = () => {
                     })
                     .catch((error) => {
                         // An error happened.
-                        console.log(error);
+                        Swal.fire("Error!", error.message, "error")
                     });
             }
         });
@@ -182,15 +186,13 @@ const all_images = () => {
         if (filter === 'name') {
             // let temp = publicImages;
             // temp.sort((a,b) => (a.imageName > b.imageName) ? 1 : ((b.imageName > a.imageName) ? -1 : 0))
-            setPublicImages(prev=>[...prev].sort((a,b) => (a.imageName > b.imageName) ? 1 : ((b.imageName > a.imageName) ? -1 : 0)))
-        }
-        else if (filter==='price') {
-            setPublicImages(prev=>[...prev].sort((a,b) => (a.price > b.price) ? 1 : ((b.price > a.price) ? -1 : 0)))
-        }
-        else if (filter === 'default') {
+            setPublicImages(prev => [...prev].sort((a, b) => (a.imageName > b.imageName) ? 1 : ((b.imageName > a.imageName) ? -1 : 0)))
+        } else if (filter === 'price') {
+            setPublicImages(prev => [...prev].sort((a, b) => (a.price > b.price) ? 1 : ((b.price > a.price) ? -1 : 0)))
+        } else if (filter === 'default') {
             setPublicImages(publicImagesDefault)
-        }else if (filter === 'datePosted') {
-            setPublicImages(prev=>[...prev].sort((a,b) => b.dateUploaded - a.dateUploaded))
+        } else if (filter === 'datePosted') {
+            setPublicImages(prev => [...prev].sort((a, b) => b.dateUploaded - a.dateUploaded))
         }
     }
 
@@ -202,15 +204,19 @@ const all_images = () => {
             }} className="btn btn-secondary mb-4" style={{width: '10%', minWidth: '100px'}}>Home
             </button>
             <div className="d-flex p-1 justify-content-between">
-                <input className="form-control" type="text" style={{width: '89%'}} placeholder="Search for Images" aria-label="default input search" onChange={event => setSearchInput(event.target.value)} />
-                <button className="btn btn-primary" style={{width: '10%', minWidth: '80px'}} onClick={()=>searchPress(publicImages, searchInput)}> <FontAwesomeIcon icon={faSearch} style={{width: 20}}/> Search
+                <input className="form-control" type="text" style={{width: '89%'}} placeholder="Search for Images"
+                       aria-label="default input search" onChange={event => setSearchInput(event.target.value)}/>
+                <button className="btn btn-primary" style={{width: '10%', minWidth: '80px'}}
+                        onClick={() => searchPress(publicImages, searchInput)}><FontAwesomeIcon icon={faSearch}
+                                                                                                style={{width: 20}}/> Search
                 </button>
             </div>
             {/*Hide sort dropdown if there are no images*/}
             {(publicImages.length > 0 || searchedImages.length > 0) && (
                 <>
                     <label>Sort</label>
-                    <select className="form-select" style={{width: '10vmax'}} aria-label="Default select example" onChange={event => handleSort(event.target.value)}>
+                    <select className="form-select" style={{width: '10vmax'}} aria-label="Default select example"
+                            onChange={event => handleSort(event.target.value)}>
                         <option value="default">Default</option>
                         <option value="name">Name</option>
                         <option value="price">Price</option>
@@ -231,7 +237,7 @@ const all_images = () => {
             {publicImages.length === 0 && <h1>No one has uploaded anything!</h1>}
             {userLoggedIn && <button
                 style={{
-                    position: "absolute",
+                    position: "fixed",
                     bottom: 10,
                     left: 10,
                 }}

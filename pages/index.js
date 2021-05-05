@@ -1,13 +1,12 @@
 import {useState, createContext, useContext, useEffect} from 'react'
-import UserContext from '../components/util/UserContext'
 import {useRouter} from 'next/router'
 import firebaseConfig from '../firebase.config'
+import Swal from 'sweetalert2'
 
 import firebase from 'firebase'
 
 
 export default function Home() {
-    const user_context = useContext(UserContext)
     const [signedIn, setSignedIn] = useState(false)
 
 
@@ -42,14 +41,27 @@ export default function Home() {
     }
 
     const signOut = () => {
-        firebase.auth().signOut().then(() => {
-            alert("Signed Out!")
-            setSignedIn(false)
-        }).catch((error) => {
-            // An error happened.
-            console.log(error);
+        Swal.fire({
+            title: "Do you want to logout?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: `Logout`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                firebase
+                    .auth()
+                    .signOut()
+                    .then(() => {
+                        Swal.fire("Success!", "You are logged out!", "success").then(_ => setSignedIn(false));
+                    })
+                    .catch((error) => {
+                        // An error happened.
+                        Swal.fire("Error!", error.message, "error")
+                    });
+            }
         });
-    }
+    };
     return (
         <>
             <div style={{

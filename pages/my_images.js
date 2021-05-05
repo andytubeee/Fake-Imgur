@@ -215,7 +215,7 @@ const my_images = () => {
             {userImages.length === 0 && userSignedIn && <h1>You have no Images</h1>}
             {userSignedIn && <button
                 style={{
-                    position: "absolute",
+                    position: "fixed",
                     bottom: 10,
                     left: 10,
                 }}

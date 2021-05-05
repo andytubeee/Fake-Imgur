@@ -44,7 +44,7 @@ const Home = () => {
             })
             .catch((error) => {
               // An error happened.
-              console.log(error);
+              Swal.fire("Error!", error.message, "error")
             });
       }
     });
@@ -85,7 +85,7 @@ const Home = () => {
         {Object.keys(selectedFiles).length > 0 && <CustomImage img={selectedFiles} authorID={firebase.auth().currentUser.uid}/>}
         <button
           style={{
-            position: "absolute",
+            position: "fixed",
             bottom: 10,
             left: 10,
           }}
