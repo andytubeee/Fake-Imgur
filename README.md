@@ -32,6 +32,12 @@
 * Test is available in [/test](https://github.com/andytubeee/Fake-Imgur/tree/main/test)
 * Unit test powered by Jest
 
+### Run Test
+
+1. Clone the repository
+2. cd into [/test](https://github.com/andytubeee/Fake-Imgur/tree/main/test)
+3. Run `npm install`
+4. Run `npm run test`
 ### Future Feature Plans
 * Implement multi-images handling:
   * Upload
